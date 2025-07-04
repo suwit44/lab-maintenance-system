@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratory Maintenance & IQC System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .nav-tabs {
+            background: white;
+            border-bottom: 1px solid #ddd;
+            padding: 0 20px;
+        }
+
+        .nav-tabs button {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs button.active {
+            color: #4a90e2;
+            border-bottom-color: #4a90e2;
+            background: #f8f9fa;
+        }
+
+        .nav-tabs button:hover {
+            background: #f8f9fa;
+            color: #4a90e2;
+        }
+
+        .frequency-tabs {
+            background: white;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .frequency-tabs button {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .frequency-tabs button.active {
+            background: #ffa500;
+            color: white;
+            border-color: #ffa500;
+        }
+
+        .frequency-tabs button:hover {
+            background: #e9ecef;
+        }
+
+        .controls {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .controls button {
+            padding: 8px 16px;
+            margin-right: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+            border-color: #ffc107;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+            border-color: #17a2b8;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .controls button:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
+        }
+
+        .filter-info {
+            background: #e3f2fd;
+            padding: 10px 20px;
+            border-left: 4px solid #2196f3;
+            margin: 0 20px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .filter-info p {
+            margin: 0;
+            font-size: 14px;
+            color: #1976d2;
+        }
+
+        .table-container {
+            background: white;
+            margin: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            font-size: 13px;
+        }
+
+        td {
+            font-size: 13px;
+            color: #666;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-overdue {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .priority-high {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .priority-medium {
+            color: #ffc107;
+            font-weight: 600;
+        }
+
+        .priority-low {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-wrap: wrap;
+            }
+            
+            .controls button {
+                margin-bottom: 5px;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔬 Laboratory Maintenance & IQC System - ServiceUser</h1>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="active" onclick="switchTab('maintenance')">Maintenance</button>
+        <button onclick="switchTab('iqc')">IQC</button>
+        <button onclick="switchTab('reports')">Reports</button>
+    </div>
+
+    <div id="maintenance-tab" class="tab-content">
+        <div class="frequency-tabs">
+            <button class="active" onclick="switchFrequency('daily')">Daily</button>
+            <button onclick="switchFrequency('weekly')">Weekly</button>
+            <button onclick="switchFrequency('monthly')">Monthly</button>
+            <button onclick="switchFrequency('quarterly')">Quarterly</button>
+            <button onclick="switchFrequency('yearly')">Yearly</button>
+            <button onclick="switchFrequency('other')">Other</button>
+        </div>
+
+        <div class="controls">
+            <button class="btn-primary" onclick="showAddTaskModal()">Add New</button>
+            <button class="btn-secondary" onclick="selectAll()">Select All</button>
+            <button class="btn-success" onclick="markComplete()">Mark Complete</button>
+            <button class="btn-warning" onclick="editSelected()">Edit</button>
+            <button class="btn-danger" onclick="deleteSelected()">Delete</button>
+            <button class="btn-info" onclick="showHistory()">History</button>
+            <button class="btn-secondary" onclick="exportData()">Export</button>
+        </div>
+
+        <div class="filter-info">
+            <p>Current Filter: <span id="current-filter">Daily Maintenance Tasks</span> | Total Tasks: <span id="total-tasks">0</span> | Completed Today: <span id="completed-today">0</span></p>
+        </div>
+
+        <div class="table-container">
+            <table id="maintenance-table">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>ID</th>
+                        <th>Procedure</th>
+                        <th>Equipment</th>
+                        <th>Property</th>
+                        <th>Operator</th>
+                        <th>Date Performed</th>
+                        <th>Next Due</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody id="maintenance-tbody">
+                    <tr>
+                        <td colspan="10" class="empty-state">
+                            <h3>No maintenance tasks found</h3>
+                            <p>Click "Add New" to create your first maintenance task</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="iqc-tab" class="tab-content" style="display: none;">
+        <div class="table-container">
+            <div class="empty-state">
+                <h3>IQC Module</h3>
+                <p>Internal Quality Control features will be available here</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="reports-tab" class="tab-content" style="display: none;">
+        <div class="table-container">
+            <div class="empty-state">
+                <h3>Reports Module</h3>
+                <p>Reporting and analytics features will be available here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Maintenance Task</h3>
+                <span class="close" onclick="closeModal('addTaskModal')">&times;</span>
+            </div>
+            <form id="addTaskForm">
+                <div class="form-group">
+                    <label for="procedure">Procedure</label>
+                    <input type="text" id="procedure" name="procedure" required>
+                </div>
+                <div class="form-group">
+                    <label for="equipment">Equipment</label>
+                    <input type="text" id="equipment" name="equipment" required>
+                </div>
+                <div class="form-group">
+                    <label for="property">Property</label>
+                    <input type="text" id="property" name="property">
+                </div>
+                <div class="form-group">
+                    <label for="operator">Operator</label>
+                    <input type="text" id="operator" name="operator" required>
+                </div>
+                <div class="form-group">
+                    <label for="frequency">Frequency</label>
+                    <select id="frequency" name="frequency" required>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority" required>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" placeholder="Additional notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('addTaskModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let tasks = [];
+        let selectedTasks = [];
+        let currentFrequency = 'daily';
+        let taskIdCounter = 1;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleData();
+            updateDisplay();
+        });
+
+        // Load sample data
+        function loadSampleData() {
+            const sampleTasks = [
+                {
+                    id: 'MT001',
+                    procedure: 'Daily Calibration Check',
+                    equipment: 'Spectrophotometer UV-2600',
+                    property: 'Wavelength Accuracy',
+                    operator: 'John Smith',
+                    frequency: 'daily',
+                    priority: 'high',
+                    status: 'pending',
+                    datePerformed: null,
+                    nextDue: new Date().toISOString().split('T')[0],
+                    notes: 'Check wavelength accuracy using holmium oxide filter'
+                },
+                {
+                    id: 'MT002',
+                    procedure: 'Temperature Monitoring',
+                    equipment: 'Incubator Chamber A',
+                    property: 'Temperature Control',
+                    operator: 'Sarah Johnson',
+                    frequency: 'daily',
+                    priority: 'medium',
+                    status: 'completed',
+                    datePerformed: new Date().toISOString().split('T')[0],
+                    nextDue: new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0],
+                    notes: 'Monitor temperature stability'
+                },
+                {
+                    id: 'MT003',
+                    procedure: 'Weekly Maintenance',
+                    equipment: 'HPLC System',
+                    property: 'Pump Pressure',
+                    operator: 'Mike Wilson',
+                    frequency: 'weekly',
+                    priority: 'high',
+                    status: 'overdue',
+                    datePerformed: null,
+                    nextDue: new Date(Date.now() - 24*60*60*1000).toISOString().split('T')[0],
+                    notes: 'Check pump seals and pressure'
+                }
+            ];
+            
+            tasks = sampleTasks;
+            taskIdCounter = tasks.length + 1;
+        }
+
+        // Switch between main tabs
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.nav-tabs button');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.style.display = 'none');
+            
+            document.querySelector(`button[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).style.display = 'block';
+        }
+
+        // Switch frequency filter
+        function switchFrequency(frequency) {
+            const buttons = document.querySelectorAll('.frequency-tabs button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            currentFrequency = frequency;
+            
+            updateDisplay();
+        }
+
+        // Update display based on current filter
+        function updateDisplay() {
+            const filteredTasks = tasks.filter(task => task.frequency === currentFrequency);
+            const tbody = document.getElementById('maintenance-tbody');
+            
+            if (filteredTasks.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="empty-state">
+                            <h3>No ${currentFrequency} maintenance tasks found</h3>
+                            <p>Click "Add New" to create your first maintenance task</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = filteredTasks.map(task => `
+                    <tr>
+                        <td><input type="checkbox" class="checkbox" data-task-id="${task.id}" onchange="toggleTaskSelection('${task.id}')"></td>
+                        <td>${task.id}</td>
+                        <td>${task.procedure}</td>
+                        <td>${task.equipment}</td>
+                        <td>${task.property}</td>
+                        <td>${task.operator}</td>
+                        <td>${task.datePerformed || '-'}</td>
+                        <td>${task.nextDue}</td>
+                        <td><span class="status-badge status-${task.status}">${task.status}</span></td>
+                        <td><span class="priority-${task.priority}">${task.priority}</span></td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Update filter info
+            const completedToday = filteredTasks.filter(task => 
+                task.status === 'completed' && task.datePerformed === new Date().toISOString().split('T')[0]
+            ).length;
+            
+            document.getElementById('current-filter').textContent = `${currentFrequency.charAt(0).toUpperCase() + currentFrequency.slice(1)} Maintenance Tasks`;
+            document.getElementById('total-tasks').textContent = filteredTasks.length;
+            document.getElementById('completed-today').textContent = completedToday;
+        }
+
+        // Toggle task selection
+        function toggleTaskSelection(taskId) {
+            const index = selectedTasks.indexOf(taskId);
+            if (index > -1) {
+                selectedTasks.splice(index, 1);
+            } else {
+                selectedTasks.push(taskId);
+            }
+        }
+
+        // Select all tasks
+        function selectAll() {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(cb => {
+                cb.checked = !allChecked;
+                const taskId = cb.dataset.taskId;
+                if (!allChecked && !selectedTasks.includes(taskId)) {
+                    selectedTasks.push(taskId);
+                } else if (allChecked) {
+                    const index = selectedTasks.indexOf(taskId);
+                    if (index > -1) selectedTasks.splice(index, 1);
+                }
+            });
+        }
+
+        // Mark selected tasks as complete
+        function markComplete() {
+            if (selectedTasks.length === 0) {
+                alert('Please select tasks to mark as complete');
+                return;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            selectedTasks.forEach(taskId => {
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.status = 'completed';
+                    task.datePerformed = today;
+                    
+                    // Calculate next due date
+                    const nextDue = new Date();
+                    switch (task.frequency) {
+                        case 'daily': nextDue.setDate(nextDue.getDate() + 1); break;
+                        case 'weekly': nextDue.setDate(nextDue.getDate() + 7); break;
+                        case 'monthly': nextDue.setMonth(nextDue.getMonth() + 1); break;
+                        case 'quarterly': nextDue.setMonth(nextDue.getMonth() + 3); break;
+                        case 'yearly': nextDue.setFullYear(nextDue.getFullYear() + 1); break;
+                        default: nextDue.setDate(nextDue.getDate() + 1); break;
+                    }
+                    task.nextDue = nextDue.toISOString().split('T')[0];
+                }
+            });
+            
+            selectedTasks = [];
+            updateDisplay();
+            alert('Selected tasks marked as complete!');
+        }
+
+        // Edit selected tasks
+        function editSelected() {
+            if (selectedTasks.length === 0) {
+                alert('Please select a task to edit');
+                return;
+            }
+            
+            if (selectedTasks.length > 1) {
+                alert('Please select only one task to edit');
+                return;
+            }
+            
+            const task = tasks.find(t => t.id === selectedTasks[0]);
+            if (task) {
+                // Populate form with task data
+                document.getElementById('procedure').value = task.procedure;
+                document.getElementById('equipment').value = task.equipment;
+                document.getElementById('property').value = task.property;
+                document.getElementById('operator').value = task.operator;
+                document.getElementById('frequency').value = task.frequency;
+                document.getElementById('priority').value = task.priority;
+                document.getElementById('notes').value = task.notes;
+                
+                showModal('addTaskModal');
+            }
+        }
+
+        // Delete selected tasks
+        function deleteSelected() {
+            if (selectedTasks.length === 0) {
+                alert('Please select tasks to delete');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${selectedTasks.length} task(s)?`)) {
+                tasks = tasks.filter(task => !selectedTasks.includes(task.id));
+                selectedTasks = [];
+                updateDisplay();
+                alert('Selected tasks deleted!');
+            }
+        }
+
+        // Show history
+        function showHistory() {
+            alert('History feature will show completed tasks and maintenance logs');
+        }
+
+        // Export data
+        function exportData() {
+            const filteredTasks = tasks.filter(task => task.frequency === currentFrequency);
+            const csv = convertToCSV(filteredTasks);
+            downloadCSV(csv, `maintenance_${currentFrequency}_tasks.csv`);
+        }
+
+        // Convert data to CSV
+        function convertToCSV(data) {
+            const headers = ['ID', 'Procedure', 'Equipment', 'Property', 'Operator', 'Frequency', 'Priority', 'Status', 'Date Performed', 'Next Due', 'Notes'];
+            const rows = data.map(task => [
+                task.id,
+                task.procedure,
+                task.equipment,
+                task.property,
+                task.operator,
+                task.frequency,
+                task.priority,
+                task.status,
+                task.datePerformed || '',
+                task.nextDue,
+                task.notes
+            ]);
+            
+            return [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+        }
+
+        // Download CSV
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Show modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Show add task modal
+        function showAddTaskModal() {
+            document.getElementById('addTaskForm').reset();
+            document.getElementById('frequency').value = currentFrequency;
+            showModal('addTaskModal');
+        }
+
+        // Handle form submission
+        document.getElementById('addTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const newTask = {
+                id: `MT${String(taskIdCounter).padStart(3, '0')}`,
+                procedure: formData.get('procedure'),
+                equipment: formData.get('equipment'),
+                property: formData.get('property'),
+                operator: formData.get('operator'),
+                frequency: formData.get('frequency'),
+                priority: formData.get('priority'),
+                status: 'pending',
+                datePerformed: null,
+                nextDue: new Date().toISOString().split('T')[0],
+                notes: formData.get('notes')
+            };
+            
+            // Check if editing existing task
+            if (selectedTasks.length === 1) {
+                const existingTaskIndex = tasks.findIndex(t => t.id === selectedTasks[0]);
+                if (existingTaskIndex > -1) {
+                    tasks[existingTaskIndex] = { ...tasks[existingTaskIndex], ...newTask, id: selectedTasks[0] };
+                    selectedTasks = [];
+                }
+            } else {
+                tasks.push(newTask);
+                taskIdCounter++;
+            }
+            
+            updateDisplay();
+            closeModal('addTaskModal');
+            alert('Task saved successfully!');
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        };
+    </script>
+</body>
+</html>
